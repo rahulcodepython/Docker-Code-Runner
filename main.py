@@ -8,7 +8,7 @@ import subprocess
 def create_code_file():
     code = """
 def function_to_test(x):
-    return x * 2    
+    return x * 2
 val = int(input())
 print(function_to_test(val))
 """
@@ -46,7 +46,7 @@ def run_main_script(input_value):
     return stdout.strip()
 
 
-def run_code_in_container(inputs: list):
+def run_code_in_container():
     client = docker.from_env()
     results: dict = {}
 
@@ -56,10 +56,20 @@ def run_code_in_container(inputs: list):
     # Copy the code.py file to the container
     copy_file_to_container(container, "code.py", "/app/code.py")
 
-    for index, value in enumerate(inputs):
-        # Run the main script with the input value
-        output = run_main_script(str(value))
-        results[index] = output
+    # Read the input value to a file
+    with open("test.txt", 'r') as test:
+
+        # Read the output value to a file
+        with open("output.txt", 'r') as output:
+
+            # Read the lines of the input and output files
+            test_lines = test.readlines()
+            output_lines = output.readlines()
+
+            for i in range(len(test_lines)):
+                # Run the main script with the input value
+                output = run_main_script(str(test_lines[i].strip()))
+                results[i] = output == output_lines[i].strip()
 
     # Stop and remove the container
     container.stop()
@@ -70,6 +80,5 @@ def run_code_in_container(inputs: list):
 
 if __name__ == "__main__":
     create_code_file()
-    test_cases = [1, 2, 3]
-    result_output = run_code_in_container(test_cases)
+    result_output = run_code_in_container()
     print(result_output)
