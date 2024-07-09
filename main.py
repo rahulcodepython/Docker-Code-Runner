@@ -22,10 +22,12 @@ def copy_file_to_container(container, src_path, dest_path):
     tar_stream = io.BytesIO()
 
     # Create a tar file
-    with tarfile.open(fileobj=tar_stream, mode='w') as tar:
-        tar.add(src_path, arcname=os.path.basename(dest_path)) # Add the file to the tar file
+    with tarfile.open(fileobj=tar_stream, mode="w") as tar:
+        tar.add(
+            src_path, arcname=os.path.basename(dest_path)
+        )  # Add the file to the tar file
 
-    tar_stream.seek(0) # Reset the stream to the beginning
+    tar_stream.seek(0)  # Reset the stream to the beginning
 
     # Copy the tar stream to the container
     container.put_archive(os.path.dirname(dest_path), tar_stream)
@@ -33,11 +35,16 @@ def copy_file_to_container(container, src_path, dest_path):
 
 def run_main_script(input_value):
     # Command to execute main.py with input_value
-    command = ['python', 'code.py']
+    command = ["python", "code.py"]
 
     # Using subprocess to run the command and capture output
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               text=True)
+    process = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
 
     # Run the command with the input_value
     stdout, _ = process.communicate(input=input_value)
@@ -57,10 +64,10 @@ def run_code_in_container():
     copy_file_to_container(container, "code.py", "/app/code.py")
 
     # Read the input value to a file
-    with open("test.txt", 'r') as test:
+    with open("test.txt", "r") as test:
 
         # Read the output value to a file
-        with open("output.txt", 'r') as output:
+        with open("output.txt", "r") as output:
 
             # Read the lines of the input and output files
             test_lines = test.readlines()
